@@ -1,0 +1,5 @@
+.flatpak
+.flatpak-builder
+_build
+__pycache__
+subprojects/blueprint-compiler

@@ -1,0 +1,9 @@
+[package]
+name = "create_gnome_app"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+str_inflector = "0.12.0"

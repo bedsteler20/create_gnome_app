@@ -1,0 +1,6 @@
+data/{{appId}}.desktop.in
+data/{{appId}}.metainfo.xml.in
+data/{{appId}}.gschema.xml
+{{snakeCase projectName}}/main.py
+{{snakeCase projectName}}/window.py
+{{snakeCase projectName}}/window.ui

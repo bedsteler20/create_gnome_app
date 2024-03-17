@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/app/bin/{{dashCase projectName}}",
+            "preLaunchTask": "Build",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/{{snakeCase projectName}}",
+                    "remoteRoot": "/app/share/{{dashCase projectName}}/{{snakeCase projectName}}/"
+                }
+            ]
+        }
+    ],
+}
