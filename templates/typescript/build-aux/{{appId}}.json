@@ -1,0 +1,65 @@
+{
+    "id": "{{appId}}",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "45",
+    "sdk": "org.gnome.Sdk",
+    "sdk-extensions": ["org.freedesktop.Sdk.Extension.node18"],
+    "command": "{{appId}}",
+    "finish-args": [
+        "--share=network",
+        "--share=ipc",
+        "--socket=fallback-x11",
+        "--device=dri",
+        "--socket=wayland"
+    ],
+    "build-options": {
+        "append-path": "/usr/lib/sdk/typescript/bin:/usr/lib/sdk/node18/bin"
+    },
+    "cleanup": [
+        "/include",
+        "/lib/pkgconfig",
+        "/man",
+        "/share/doc",
+        "/share/gtk-doc",
+        "/share/man",
+        "/share/pkgconfig",
+        "*.la",
+        "/bin/esbuild",
+        "*.a"
+    ],
+    "modules": [
+        {
+            "name": "esbuild",
+            "buildsystem": "simple",
+            "build-commands": [
+                "ls",
+                "install -Dm755 bin/esbuild /app/bin/esbuild"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.20.1.tgz",
+                    "sha256": "1b70ce10aba62bf9c98de4b31d6b578fe9de4af30ec4983e3fa75490c97f0cf0",
+                    "only-arches": ["x86_64"]
+                },
+                {
+                    "type": "archive",
+                    "url": "https://registry.npmjs.org/@esbuild/linux-arm64/-/linux-arm64-0.20.1.tgz",
+                    "sha256": "693780039e3f09ff3c010c9929a46194c991258c7d13be27675172edc0c68691",
+                    "only-arches": ["aarch64"]
+                }
+            ]
+        },
+        {
+            "name": "{{dashCase projectName}}",
+            "builddir": true,
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": ".."
+                }
+            ]
+        }
+    ]
+}

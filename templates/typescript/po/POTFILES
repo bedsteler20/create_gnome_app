@@ -1,0 +1,6 @@
+data/{{appId}}.desktop.in
+data/{{appId}}.metainfo.xml.in
+data/{{appId}}.gschema.xml
+src/main.ts
+src/window.ts
+src/window.blp
