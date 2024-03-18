@@ -91,8 +91,9 @@ fn main() {
         format!("./{}", project_name)
     };
 
-    let template_reader =
-        template_reader::FsTemplateReader::new(&format!("./templates/{}", language));
+    // let template_reader =
+    // template_reader::FsTemplateReader::new(&format!("./templates/{}", language));
+    let template_reader = template_reader::TemplateReader::new(language);
     let template_writer = template_writer::TemplateWriter::new(&format!("./{}", output_dir));
 
     let engine = engine::EngineBuilder::new()
@@ -102,8 +103,8 @@ fn main() {
         .add_formatter("pascalCase", formatters::pascal_case)
         .add_formatter("pathCase", formatters::path_case)
         .add_formatter("constCase", formatters::const_case)
-        .add_variable("projectName", project_name)
-        .add_variable("appId", app_id)
+        .add_variable("projectName", project_name, true)
+        .add_variable("appId", app_id, true)
         .build();
 
     let generator = generator::Generator::new(engine, template_writer, template_reader);

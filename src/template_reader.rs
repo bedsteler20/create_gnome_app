@@ -1,13 +1,15 @@
 use std::fs;
 
-pub struct FsTemplateReader {
+#[cfg(not(feature = "bundle_templates"))]
+pub struct TemplateReader {
     root: String,
 }
 
-impl FsTemplateReader {
-    pub fn new(root: &str) -> Self {
-        FsTemplateReader {
-            root: root.to_string(),
+#[cfg(not(feature = "bundle_templates"))]
+impl TemplateReader {
+    pub fn new(root: String) -> Self {
+        TemplateReader {
+            root: format!("{}/templates/{}", env!("CARGO_MANIFEST_DIR"), root),
         }
     }
 
@@ -34,21 +36,56 @@ impl FsTemplateReader {
             })
             .collect()
     }
-}
 
-impl TemplateReader for FsTemplateReader {
-    fn list_files(&self) -> Vec<String> {
+    pub fn list_files(&self) -> Vec<String> {
         self.walk_dir(&self.root)
     }
 
-    fn read_file(&self, file: &str) -> String {
+    pub fn read_file(&self, file: &str) -> String {
         fs::read_to_string(format!("{}/{}", self.root, file)).unwrap()
     }
 }
 
-pub trait TemplateReader {
-    fn list_files(&self) -> Vec<String>;
-    fn read_file(&self, file: &str) -> String;
+#[cfg(feature = "bundle_templates")]
+static TEMPLATE_DIR: include_dir::Dir = include_dir::include_dir!("templates");
+#[cfg(feature = "bundle_templates")]
+pub struct TemplateReader {
+    language: String,
+}
+
+#[cfg(feature = "bundle_templates")]
+impl TemplateReader {
+    pub fn new(language: String) -> Self {
+        TemplateReader {
+            language: language.to_string(),
+        }
+    }
+
+    fn walk_dir(&self, dir: &include_dir::Dir) -> Vec<String> {
+        let mut files: Vec<String> = vec![];
+        for entry in dir.files() {
+            files.push(entry.path().to_string_lossy().to_string());
+        }
+
+        for entry in dir.dirs() {
+            files.extend(self.walk_dir(entry));
+        }
+
+        files
+    }
+
+    pub fn list_files(&self) -> Vec<String> {
+        self.walk_dir(&TEMPLATE_DIR.get_dir(&self.language).unwrap())
+    }
+
+    pub fn read_file(&self, file: &str) -> String {
+        TEMPLATE_DIR
+            .get_file(file)
+            .unwrap()
+            .contents_utf8()
+            .unwrap()
+            .to_string()
+    }
 }
 
 #[cfg(test)]
@@ -57,9 +94,8 @@ mod test {
 
     #[test]
     fn test_list_files() {
-        let reader = FsTemplateReader::new("templates/python");
+        let reader = TemplateReader::new("templates/python".to_string());
         let files = reader.list_files();
-        println!("{:?}", files);
         assert!(files.contains(&"requirements.txt".to_string()));
         assert!(files.contains(&".vscode/launch.json".to_string()));
         assert!(files.contains(&"meson.build".to_string()));
@@ -67,7 +103,7 @@ mod test {
 
     #[test]
     fn test_read_file() {
-        let reader = FsTemplateReader::new("templates/python");
+        let reader = TemplateReader::new("templates/python".to_string());
         let file = reader.read_file("meson.build");
         assert!(file.contains("project('{{dashCase projectName}}"));
     }

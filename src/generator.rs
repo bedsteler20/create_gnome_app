@@ -1,20 +1,20 @@
 use crate::{
     engine::Engine,
-    template_reader::{FsTemplateReader, TemplateReader},
+    template_reader::TemplateReader,
     template_writer::TemplateWriter,
 };
 
 pub struct Generator {
     engine: Engine,
     template_writer: TemplateWriter,
-    template_reader: FsTemplateReader,
+    template_reader: TemplateReader,
 }
 
 impl Generator {
     pub fn new(
         engine: Engine,
         template_writer: TemplateWriter,
-        template_reader: FsTemplateReader,
+        template_reader: TemplateReader,
     ) -> Self {
         Generator {
             engine,

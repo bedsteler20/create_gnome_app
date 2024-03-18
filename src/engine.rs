@@ -1,11 +1,11 @@
 pub struct Engine {
-    variables: Vec<(String, String)>,
+    variables: Vec<(String, String, bool)>,
 }
 
 impl Engine {
     pub fn format(&self, input: &String) -> String {
         let mut result = input.clone();
-        for (name, value) in &self.variables {
+        for (name, value, _) in &self.variables {
             result = result.replace(&format!("{{{{{}}}}}", name), value);
         }
 
@@ -15,7 +15,7 @@ impl Engine {
 
 pub struct EngineBuilder {
     pub formatters: Vec<(String, Box<dyn Fn(String) -> String>)>,
-    variables: Vec<(String, String)>,
+    variables: Vec<(String, String, bool)>,
 }
 
 impl EngineBuilder {
@@ -35,8 +35,9 @@ impl EngineBuilder {
         self
     }
 
-    pub fn add_variable(mut self, name: &str, value: String) -> Self {
-        self.variables.push((name.to_string(), value));
+    pub fn add_variable(mut self, name: &str, value: String, should_format: bool) -> Self {
+        self.variables
+            .push((name.to_string(), value, should_format));
         self
     }
 
@@ -44,9 +45,13 @@ impl EngineBuilder {
         let mut variables = self.variables.clone();
 
         for (name, formatter) in self.formatters {
-            for (var_name, var_value) in self.variables.clone() {
+            for (var_name, var_value, should_format) in self.variables.clone() {
+                if !should_format {
+                    continue;
+                }
+
                 let new_value = formatter(var_value.clone());
-                variables.push((format!("{} {}", name, var_name), new_value));
+                variables.push((format!("{} {}", name, var_name), new_value, true));
             }
         }
 
@@ -62,7 +67,7 @@ mod test {
     #[test]
     fn test_variable_formatting() {
         let engine = EngineBuilder::new()
-            .add_variable("message", "Hello".to_string())
+            .add_variable("message", "Hello".to_string(), true)
             .build();
         assert_eq!(
             engine.format(&"{{message}} World".to_string()),
@@ -73,7 +78,7 @@ mod test {
     #[test]
     fn test_formatter_formatting() {
         let engine = EngineBuilder::new()
-            .add_variable("message", "HelloWorld".to_string())
+            .add_variable("message", "HelloWorld".to_string(), true)
             .add_formatter("snakeCase", formatters::snake_case)
             .build();
         assert_eq!(
