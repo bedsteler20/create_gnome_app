@@ -1,0 +1,7 @@
+data/{{appId}}.desktop.in
+data/{{appId}}.metainfo.xml.in
+data/{{appId}}.gschema.xml
+src/main.vala
+src/window.vala
+src/application.vala
+src/window.ui

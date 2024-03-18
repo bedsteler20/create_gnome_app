@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name={{dashCase projectName}}
+Exec={{dashCase projectName}}
+Icon={{appId}}
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true

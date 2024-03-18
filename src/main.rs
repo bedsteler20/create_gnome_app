@@ -7,7 +7,7 @@ use clap::{App, Arg};
 use inquire::{Select, Text};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const LANGUAGES: [&str; 3] = ["c", "python", "typescript"];
+const LANGUAGES: [&str; 4] = ["c", "python", "typescript", "vala"];
 
 fn validate_app_id(app_id: &str) -> Result<(), String> {
     let period_count = app_id.chars().filter(|c| *c == '.').count();
