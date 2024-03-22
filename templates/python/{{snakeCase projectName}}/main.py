@@ -1,3 +1,4 @@
+{{license}}
 import sys
 
 

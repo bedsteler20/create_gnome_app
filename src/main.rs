@@ -1,13 +1,17 @@
 mod engine;
 mod formatters;
 mod generator;
+mod licenses;
 mod template_reader;
 mod template_writer;
+
 use clap::{App, Arg};
 use inquire::{Select, Text};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
-const LANGUAGES: [&str; 4] = ["c", "python", "typescript", "vala"];
+const LANGUAGES: [&str; 5] = ["c", "python", "typescript", "vala", "js"];
+
+static TEMPLATE_DIR: include_dir::Dir = include_dir::include_dir!("templates");
 
 fn validate_app_id(app_id: &str) -> Result<(), String> {
     let period_count = app_id.chars().filter(|c| *c == '.').count();
@@ -55,6 +59,14 @@ fn main() {
                 .help("Sets the output directory")
                 .takes_value(true),
         )
+        .arg(
+            Arg::new("license")
+                .short('c')
+                .long("license")
+                .value_name("LICENSE")
+                .help("The license to use")
+                .possible_values(&licenses::LICENSE_NAMES),
+        )
         .get_matches();
 
     let app_id = if let Some(app_id) = matches.value_of("appId") {
@@ -85,16 +97,26 @@ fn main() {
         Text::new("Enter the project name:").prompt().unwrap()
     };
 
+    let license = if let Some(license) = matches.value_of("license") {
+        license.to_string()
+    } else {
+        let license = Select::new("Select the license:", licenses::LICENSE_NAMES.to_vec())
+            .prompt()
+            .unwrap();
+        license.to_string()
+    };
+
     let output_dir = if let Some(output_dir) = matches.value_of("outputDir") {
         output_dir.to_string()
     } else {
         format!("./{}", project_name)
     };
 
-    // let template_reader =
-    // template_reader::FsTemplateReader::new(&format!("./templates/{}", language));
-    let template_reader = template_reader::TemplateReader::new(language);
+    let short_license = licenses::get_short_license(&license, &language);
+
+    let template_reader = template_reader::TemplateReader::new(language, TEMPLATE_DIR.clone());
     let template_writer = template_writer::TemplateWriter::new(&format!("./{}", output_dir));
+
 
     let engine = engine::EngineBuilder::new()
         .add_formatter("snakeCase", formatters::snake_case)
@@ -105,6 +127,7 @@ fn main() {
         .add_formatter("constCase", formatters::const_case)
         .add_variable("projectName", project_name, true)
         .add_variable("appId", app_id, true)
+        .add_variable("license", short_license, false)
         .build();
 
     let generator = generator::Generator::new(engine, template_writer, template_reader);

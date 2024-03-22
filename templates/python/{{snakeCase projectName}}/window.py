@@ -1,3 +1,4 @@
+{{license}}
 
 from gi.repository import Adw
 from gi.repository import Gtk

@@ -1,0 +1,5 @@
+- [ ] Investigate implementing testing for the templates
+- [ ] Add a vanilla js template
+- [ ] Add a rust template
+- [ ] Add a relm4 template
+- [ ] Investigate adding a template for C# with gir.core

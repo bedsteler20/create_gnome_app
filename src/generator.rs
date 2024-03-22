@@ -4,17 +4,17 @@ use crate::{
     template_writer::TemplateWriter,
 };
 
-pub struct Generator {
+pub struct Generator<'a> {
     engine: Engine,
     template_writer: TemplateWriter,
-    template_reader: TemplateReader,
+    template_reader: TemplateReader<'a>,
 }
 
-impl Generator {
+impl Generator<'_> {
     pub fn new(
         engine: Engine,
         template_writer: TemplateWriter,
-        template_reader: TemplateReader,
+        template_reader: TemplateReader<'static>,
     ) -> Self {
         Generator {
             engine,
