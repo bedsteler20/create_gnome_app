@@ -1,0 +1,6 @@
+data/{{appId}}.desktop.in
+data/{{appId}}.metainfo.xml.in
+data/{{appId}}.gschema.xml
+src/main.js
+src/window.js
+src/window.ui
